@@ -5,8 +5,10 @@ import Anthropic from "@anthropic-ai/sdk";
 const app = express();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "20mb" }));
+
+app.get("/", (req, res) => res.json({ status: "ok" }));
 
 app.post("/extract", async (req, res) => {
   const { fileData, fileType } = req.body;
@@ -51,6 +53,7 @@ Rules:
     const parsed = JSON.parse(clean);
     res.json(parsed);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
