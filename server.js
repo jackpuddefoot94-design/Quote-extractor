@@ -19,9 +19,10 @@ app.post("/extract", async (req, res) => {
     ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: fileData } }
     : { type: "image", source: { type: "base64", media_type: fileType, data: fileData } };
 
-  const prompt = `Extract all line items from this supplier quote. Return ONLY valid JSON, no markdown or explanation.
+  const prompt = `Extract all line items from this supplier quote.
 
-Format:
+You must respond with ONLY a JSON object. No preamble, no explanation, no markdown. Start your response with { and end with }.
+
 {
   "items": [
     {
@@ -39,7 +40,8 @@ Rules:
 - If quote shows price per 10/100/1000, divide to get per-unit price
 - If price includes GST, divide by 1.1 to get ex-GST
 - line_value_ex_gst = unit_price_ex_gst * quantity
-- All prices as plain numbers, no $ signs`;
+- All prices as plain numbers, no $ signs
+- Your entire response must be valid JSON. Nothing before or after the JSON object.`;
 
   try {
     const message = await client.messages.create({
